@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 const uri = 'mongodb+srv://lenu0215:ahlam08@cluster0.f59hb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your actual connection string
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(uri)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
