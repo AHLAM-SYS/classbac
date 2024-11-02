@@ -1,39 +1,45 @@
+// // server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+// require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://lenu0215:ahlam08@cluster0.f59hb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Define a schema for student registration
-const StudentSchema = new mongoose.Schema({
+
+const uri = 'mongodb+srv://lenu0215:ahlam08@cluster0.f59hb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your actual connection string
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error(err));
+
+
+
+// Define a simple schema and model
+const studentSchema = new mongoose.Schema({
     name: String,
-    email: String,
     age: Number,
-    grade: String
+    grade: String,
+    parentEmail: String,
 });
 
-const Student = mongoose.model('Student', StudentSchema);
+const Student = mongoose.model('Student', studentSchema);
 
-// API endpoint to register a student
-app.post('/register', async (req, res) => {
-    const student = new Student(req.body);
-    try {
-        await student.save();
-        res.status(201).send(student);
-    } catch (error) {
-        res.status(400).send(error);
-    }
+// Registration endpoint
+app.post('/register', (req, res) => {
+    const newStudent = new Student(req.body);
+    newStudent.save()
+        .then(() => res.status(201).send('Student registered'))
+        .catch(err => res.status(400).send(err));
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
