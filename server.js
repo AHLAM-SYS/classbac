@@ -1,46 +1,41 @@
-// // server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-// require('dotenv').config();
-const dotenv = require('dotenv');
-dotenv.config();
-const app = express();
-const PORT = process.env.PORT || 5000;
+require('dotenv').config();
 
+const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Connect to MongoDB
-
-
-
-
-
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(err));
+    .catch(err => console.error('MongoDB connection error:', err));
 
-
-// Define a simple schema and model
-const studentSchema = new mongoose.Schema({
+// Define a schema and model for registrations
+const registrationSchema = new mongoose.Schema({
     name: String,
-    age: Number,
+    email: String,
     grade: String,
-    parentEmail: String,
 });
 
-const Student = mongoose.model('Student', studentSchema);
+const Registration = mongoose.model('Registration', registrationSchema);
 
 // Registration endpoint
-app.post('/register', (req, res) => {
-    const newStudent = new Student(req.body);
-    newStudent.save()
-        .then(() => res.status(201).send('Student registered'))
-        .catch(err => res.status(400).send(err));
+app.post('/register', async (req, res) => {
+    try {
+        const { name, email, grade } = req.body;
+        const newRegistration = new Registration({ name, email, grade });
+        await newRegistration.save();
+        res.status(201).json(newRegistration);
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
+// Start the server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
