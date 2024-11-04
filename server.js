@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 // require('dotenv').config();
-
+const dotenv = require('dotenv');
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -14,12 +15,12 @@ app.use(bodyParser.json());
 // Connect to MongoDB
 
 
-const uri = 'mongodb+srv://lenu0215:ahlam08@cluster0.f59hb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your actual connection string
 
-mongoose.connect(uri)
+
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
-
 
 
 // Define a simple schema and model
